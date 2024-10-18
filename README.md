@@ -6,7 +6,7 @@
 ## Docker Compose
 [Docker Compose for Postgres](https://vercel.com/docs/storage/vercel-postgres/local-development)
 
-```bash
+```yml
     services:
     postgres:
         image: postgres
