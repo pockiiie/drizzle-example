@@ -58,12 +58,24 @@ export async function createUser(errorsState: State, formData: FormData) {
 
   // Insert data into database
   const user: typeof usersTable.$inferInsert = result.data;
-  await db.insert(usersTable).values(user);
+  try {
+    await db.insert(usersTable).values(user);
+  } catch (err: any) {
+    if (err.constraint == 'users_email_unique') {
+      return {
+        errors: { email: ['email is taken'] },
+        message: `${err.detail}`
+      }
+    }
+    return {
+      message: `Fail to insert data - ${err.constraint} ${err.detail}`
+    }
+  }
   return {
     message: 'Data added'
   };
 }
 
 export async function getUsers() {
-    return await db.select().from(usersTable);
+  return await db.select().from(usersTable);
 }
