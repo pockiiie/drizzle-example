@@ -62,6 +62,8 @@ export async function createUser(errorsState: State, formData: FormData) {
   return {
     message: 'Data added'
   };
+}
 
-
+export async function getUsers() {
+    return await db.select().from(usersTable);
 }
