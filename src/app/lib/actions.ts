@@ -3,6 +3,7 @@
 import { db } from '@/db';
 import { usersTable } from '@/db/schema';
 import { z } from 'zod';
+import { UserForm } from './definitions';
 
 export type State = {
   errors?: {
@@ -26,7 +27,7 @@ const UserSchema = z.object({
   }).gt(0, { message: 'Please enter an amount greater than 0' }),
 });
 
-export async function createUser(errorsState: State, formData: FormData) {
+export async function createUser(errorsState: State, data: UserForm) {
 
   //remove id from UserSchema and validate password and confirm password
   const CreateUser = UserSchema.omit({ id: true })
@@ -41,11 +42,11 @@ export async function createUser(errorsState: State, formData: FormData) {
 
   // Validate form data using Zod
   const result = CreateUser.safeParse({
-    name: formData.get('name'),
-    email: formData.get('email'),
-    age: Number(formData.get('age')),
-    password: formData.get('password'),
-    confirmPassword: formData.get('confirmPassword')
+    name: data.name,
+    email: data.email,
+    age: Number(data.age),
+    password: data.password,
+    confirmPassword: data.confirmPassword
   })
 
   // If form validation fails, return erros early. Otherwise, continue.
