@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import SideNav from "./ui/side-nav";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -26,9 +27,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex justify-center`}
       >
-        {children}
+        <main className="flex w-full">
+          <nav className="navigation w-1/4 p-4">
+            <div className="site-header">
+              <h2 className="text-3xl">Drizzle Example</h2>
+            </div>
+            <SideNav />
+          </nav>
+          <div className="w-3/4 p-4">
+            {children}
+          </div>
+        </main>
       </body>
     </html>
   );

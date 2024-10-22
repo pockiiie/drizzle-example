@@ -12,6 +12,7 @@
     "db-migrate": "pnpm drizzle-kit migrate"
   },
   "dependencies": {
+    "@heroicons/react": "^2.1.5",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.35.1",
     "next": "14.2.15",
