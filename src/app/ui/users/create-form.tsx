@@ -15,13 +15,15 @@ export default function Form() {
   const onSubmit = (data: any) => {
     createUser(state, data).then(result => {
       setState(result);
+      if (!result.errors) {
+        reset();
+      }
     }).catch(e => {
       console.error(e);
     });
-    reset();
   }
 
-  const onFocus = (event: BaseSyntheticEvent) => {
+  const onChange = (event: BaseSyntheticEvent) => {
     const target = event.target.name;
     const { errors }: any = state;
     delete errors?.[target];
@@ -41,7 +43,7 @@ export default function Form() {
               {...register('name')}
               type="text"
               placeholder="Name"
-              onFocus={onFocus}
+              onChange={onChange}
               className="text-black peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
@@ -72,7 +74,7 @@ export default function Form() {
               {...register('email')}
               type="email"
               placeholder="Email"
-              onFocus={onFocus}
+              onChange={onChange}
               className="text-black peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
@@ -103,7 +105,7 @@ export default function Form() {
               {...register('password')}
               type="password"
               placeholder="Password"
-              onFocus={onFocus}
+              onChange={onChange}
               className="text-black peer block w-1/2 rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
@@ -134,7 +136,7 @@ export default function Form() {
               {...register('confirmPassword')}
               type="password"
               placeholder="Password Confirmation"
-              onFocus={onFocus}
+              onChange={onChange}
               className="text-black peer block w-1/2 rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
@@ -165,7 +167,7 @@ export default function Form() {
               {...register('age')}
               type="number"
               placeholder="Age"
-              onFocus={onFocus}
+              onChange={onChange}
               className="text-black peer block w-1/4 rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>

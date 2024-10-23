@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { usersTable } from '@/db/schema';
 import { z } from 'zod';
 import { UserForm } from './definitions';
+import { sql } from 'drizzle-orm';
 
 export type State = {
   errors?: {
@@ -78,5 +79,5 @@ export async function createUser(errorsState: State, data: UserForm) {
 }
 
 export async function getUsers() {
-  return await db.select().from(usersTable);
+  return await db.select().from(usersTable).orderBy(sql`${usersTable.id} desc nulls first`);
 }
