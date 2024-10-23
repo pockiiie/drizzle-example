@@ -15,14 +15,16 @@ export default function Form() {
   const onSubmit = (data: any) => {
     createUser(state, data).then(result => {
       setState(result);
+    }).catch(e => {
+      console.error(e);
     });
     reset();
   }
 
   const onFocus = (event: BaseSyntheticEvent) => {
     const target = event.target.name;
-    const errors: any = { ...state.errors }
-    delete errors[target];
+    const { errors }: any = state;
+    delete errors?.[target];
     setState({ ...state, errors: errors });
   }
 
