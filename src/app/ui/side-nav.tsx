@@ -17,15 +17,15 @@ export default function SideNav() {
 
   ]
 
-  const iconClass = 'w-4 h-4 mr-2'
+  const iconClass = 'w-4 h-4 m-0 lg:mr-2'
   return (
     <div>
       <ul>
         {
-          links.map((link) => {
+          links.map((link, index) => {
             return (
-              <li>
-                <Link className="flex items-center hover:bg-gray-700 p-2 rounded"
+              <li key={index}>
+                <Link className="flex justify-center lg:justify-normal hover:bg-gray-700 p-2 rounded"
                   href={link.link}>
                   {
                     link.icon == 'HomeIcon' && <HomeIcon className={iconClass} />
@@ -33,7 +33,7 @@ export default function SideNav() {
                   {
                     link.icon == 'UserIcon' && <UserIcon className={iconClass} />
                   }
-                  <span className="flex"> {link.name}</span>
+                  <span className="hidden lg:flex"> {link.name}</span>
                 </Link>
               </li>
             )

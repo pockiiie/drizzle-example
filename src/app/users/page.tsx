@@ -8,12 +8,11 @@ export default async function Page() {
     <div>
       <h1 className="text-2xl">Users</h1>
       <section className="mt-4">
-        <header className="text-xl">Create User</header>
-        <UserForm />
+        <UserTable users={users} />
       </section>
       <section className="mt-4">
-        <header className="text-xl">User List</header>
-        <UserTable users={users} />
+        <header className="text-xl">Create User</header>
+        <UserForm />
       </section>
     </div>
   );

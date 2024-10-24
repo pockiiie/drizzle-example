@@ -30,13 +30,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex justify-center`}
       >
         <main className="flex w-full">
-          <nav className="navigation w-1/4 p-4">
-            <div className="site-header">
-              <h2 className="text-3xl">Drizzle Example</h2>
+          <nav className="navigation w-1/12 p-0 pt-4 lg:w-1/4 lg:p-4">
+            <div className="site-header text-center lg:text-left w-full">
+              <h2 className="text-sm lg:text-3xl">Drizzle</h2>
             </div>
             <SideNav />
           </nav>
-          <div className="w-3/4 p-4">
+          <div className="w-11/12 lg:w-3/4 p-4">
             {children}
           </div>
         </main>

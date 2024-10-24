@@ -3,17 +3,17 @@
 import { db } from '@/db';
 import { usersTable } from '@/db/schema';
 import { z } from 'zod';
-import { UserForm } from './definitions';
-import { sql } from 'drizzle-orm';
+import { UserCreate, UserUpdate, UserGet } from './definitions';
+import { DrizzleError, sql } from 'drizzle-orm';
 
-export type State = {
+export type FormState = {
   errors?: {
     name?: string[];
     email?: string[];
     age?: string[];
     password?: string[];
     confirmPassword?: string[];
-  };
+  }
   message?: string | null;
 }
 
@@ -28,9 +28,10 @@ const UserSchema = z.object({
   }).gt(0, { message: 'Please enter an amount greater than 0' }),
 });
 
-export async function createUser(errorsState: State, data: UserForm) {
+export async function createUser(prevState: FormState, formData: FormData) {
 
-  //remove id from UserSchema and validate password and confirm password
+  // Remove id from UserSchema and validate password and confirm password
+  // superRefine is zod validation function
   const CreateUser = UserSchema.omit({ id: true })
     .superRefine(({ password, confirmPassword }, ctx) => {
       if (password !== confirmPassword)
@@ -42,42 +43,60 @@ export async function createUser(errorsState: State, data: UserForm) {
     });
 
   // Validate form data using Zod
-  const result = CreateUser.safeParse({
-    name: data.name,
-    email: data.email,
-    age: Number(data.age),
-    password: data.password,
-    confirmPassword: data.confirmPassword
+  const validatedFields = CreateUser.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    age: Number(formData.get('age')),
+    password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword')
   })
 
   // If form validation fails, return erros early. Otherwise, continue.
-  if (!result.success) {
+  if (!validatedFields.success) {
     return {
-      errors: result.error.flatten().fieldErrors,
+      errors: validatedFields.error.flatten().fieldErrors,
       message: 'Invalid Form',
     }
   }
 
   // Insert data into database
-  const user: typeof usersTable.$inferInsert = result.data;
+  const user: typeof usersTable.$inferInsert = validatedFields.data;
+  let insertedData = null;
   try {
-    await db.insert(usersTable).values(user);
+    insertedData = await db.insert(usersTable).values(user);
   } catch (err: any) {
-    if (err.constraint == 'users_email_unique') {
+    // Unique email error from database
+    if (err?.constraint == 'users_email_unique') {
       return {
         errors: { email: ['email is taken'] },
-        message: `${err.detail}`
+        message: `${err?.detail}`,
       }
     }
+    // If there are any errors
     return {
-      message: `Fail to insert data - ${err.constraint} ${err.detail}`
+      message: `Fail to insert data - ${err?.constraint} ${err?.detail}`,
     }
   }
+
+  // SUCCESS
   return {
-    message: 'Data added'
+    message: 'Data added',
   };
 }
 
 export async function getUsers() {
   return await db.select().from(usersTable).orderBy(sql`${usersTable.id} desc nulls first`);
+}
+
+export async function getUser(id: number) {
+  return await db.select({
+    id: usersTable.id,
+    name: usersTable.name,
+    email: usersTable.email,
+    age: usersTable.age
+  }).from(usersTable).where(sql`${usersTable.id} = ${id}`);
+}
+
+export async function updateUser(errorState: FormState, data: UserUpdate) {
+
 }

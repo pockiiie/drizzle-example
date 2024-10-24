@@ -1,37 +1,32 @@
 'use client'
 
-import { BaseSyntheticEvent, useState } from "react";
-import { createUser, State } from "@/app/lib/actions";
-import { useForm } from 'react-hook-form';
+import { BaseSyntheticEvent, useEffect, useRef, useState } from "react";
+import { createUser, FormState } from "@/app/lib/actions";
+import { useFormState } from "react-dom";
 
 export default function Form() {
-  // ✅ Form Elements
-  // ✅ Validation in createUser function
-  // ✅ Action
-  const initialState: State = { message: null, errors: {} };
-  const [state, setState] = useState(initialState);
-  const { register, handleSubmit, reset } = useForm();
+  const initFormState: FormState = { errors: {}, message: null };
+  const [formState, formAction, isPending] = useFormState(createUser, initFormState);
+  const [formErrors, setErrors] = useState({ ...initFormState.errors });
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const onSubmit = (data: any) => {
-    createUser(state, data).then(result => {
-      setState(result);
-      if (!result.errors) {
-        reset();
-      }
-    }).catch(e => {
-      console.error(e);
-    });
-  }
+  useEffect(() => {
+    if (!formState?.errors) {
+      formRef.current?.reset();
+    }
+    const errors = { ...formState.errors }
+    setErrors(errors);
+  }, [formState]);
 
-  const onChange = (event: BaseSyntheticEvent) => {
-    const target = event.target.name;
-    const { errors }: any = state;
-    delete errors?.[target];
-    setState({ ...state, errors: errors });
+  const handleChange = (event: BaseSyntheticEvent) => {
+    const { target } = event;
+    const errors: any = { ...formErrors };
+    delete errors?.[target.name];
+    setErrors(errors);
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form ref={formRef} action={formAction}>
       <div className="mb-4">
         <label htmlFor="name" className="mb-2 hidden md:block text-sm font-medium">
           Name
@@ -40,10 +35,10 @@ export default function Form() {
           <div className="relative">
             <input
               id="name"
-              {...register('name')}
+              name="name"
               type="text"
               placeholder="Name"
-              onChange={onChange}
+              onChange={handleChange}
               className="text-black peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
@@ -51,10 +46,10 @@ export default function Form() {
             aria-live="polite"
             aria-atomic="true"
             className={
-              `${state.errors?.name ? 'h-8' : 'h-0'} transition-all duration-300 ease-in-out`
+              `${formErrors?.name ? 'h-8' : 'h-0'} transition-all duration-300 ease-in-out`
             }
           >
-            {state.errors?.name && state.errors.name?.map((error: string) => (
+            {formErrors?.name && formErrors.name?.map((error: string) => (
               <p className="mt-2 text-sm text-red-500" key={error}>
                 {error}
               </p>
@@ -71,10 +66,10 @@ export default function Form() {
           <div className="relative">
             <input
               id="email"
-              {...register('email')}
+              name="email"
               type="email"
               placeholder="Email"
-              onChange={onChange}
+              onChange={handleChange}
               className="text-black peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
@@ -83,10 +78,10 @@ export default function Form() {
           aria-live="polite"
           aria-atomic="true"
           className={
-            `${state.errors?.email ? 'h-8' : 'h-0'} transition-all duration-300 ease-in-out`
+            `${formErrors?.email ? 'h-8' : 'h-0'} transition-all duration-300 ease-in-out`
           }
         >
-          {state.errors?.email && state.errors.email?.map((error: string) => (
+          {formErrors?.email && formErrors.email?.map((error: string) => (
             <p className="mt-2 text-sm text-red-500" key={error}>
               {error}
             </p>
@@ -102,10 +97,10 @@ export default function Form() {
           <div className="relative">
             <input
               id="password"
-              {...register('password')}
+              name="password"
               type="password"
               placeholder="Password"
-              onChange={onChange}
+              onChange={handleChange}
               className="text-black peer block w-1/2 rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
@@ -114,10 +109,10 @@ export default function Form() {
           aria-live="polite"
           aria-atomic="true"
           className={
-            `${state.errors?.password ? 'h-8' : 'h-0'} transition-all duration-300 ease-in-out`
+            `${formErrors?.password ? 'h-8' : 'h-0'} transition-all duration-300 ease-in-out`
           }
         >
-          {state.errors?.password && state.errors.password?.map((error: string) => (
+          {formErrors?.password && formErrors.password?.map((error: string) => (
             <p className="mt-2 text-sm text-red-500" key={error}>
               {error}
             </p>
@@ -133,10 +128,10 @@ export default function Form() {
           <div className="relative">
             <input
               id="confirmPassword"
-              {...register('confirmPassword')}
+              name="confirmPassword"
               type="password"
               placeholder="Password Confirmation"
-              onChange={onChange}
+              onChange={handleChange}
               className="text-black peer block w-1/2 rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
@@ -145,10 +140,10 @@ export default function Form() {
           aria-live="polite"
           aria-atomic="true"
           className={
-            `${state.errors?.confirmPassword ? 'h-8' : 'h-0'} transition-all duration-300 ease-in-out`
+            `${formErrors?.confirmPassword ? 'h-8' : 'h-0'} transition-all duration-300 ease-in-out`
           }
         >
-          {state.errors?.confirmPassword && state.errors.confirmPassword?.map((error: string) => (
+          {formErrors?.confirmPassword && formErrors.confirmPassword?.map((error: string) => (
             <p className="mt-2 text-sm text-red-500" key={error}>
               {error}
             </p>
@@ -164,10 +159,10 @@ export default function Form() {
           <div className="relative">
             <input
               id="age"
-              {...register('age')}
+              name="age"
               type="number"
               placeholder="Age"
-              onChange={onChange}
+              onChange={handleChange}
               className="text-black peer block w-1/4 rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
@@ -176,10 +171,10 @@ export default function Form() {
           aria-live="polite"
           aria-atomic="true"
           className={
-            `${state.errors?.age ? 'h-8' : 'h-0'} transition-all duration-300 ease-in-out`
+            `${formErrors?.age ? 'h-8' : 'h-0'} transition-all duration-300 ease-in-out`
           }
         >
-          {state.errors?.age && state.errors.age?.map((error: string) => (
+          {formErrors?.age && formErrors.age?.map((error: string) => (
             <p className="mt-2 text-sm text-red-500" key={error}>
               {error}
             </p>
@@ -190,14 +185,13 @@ export default function Form() {
       <div className="mb-4 flex justify-end">
         <button
           type="reset"
-          onClick={() => reset()}
           className="ml-4 flex h-8 items-center rounded-lg bg-red-400 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 active:bg-blue-600 aria-disabled:cursor-not-allowed aria-disabled:opacity-50">
           Reset
         </button>
         <button
           type="submit"
           className="ml-4 flex h-8 items-center rounded-lg bg-blue-500 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 active:bg-blue-600 aria-disabled:cursor-not-allowed aria-disabled:opacity-50">
-          Cretate
+          Create
         </button>
       </div>
     </form>

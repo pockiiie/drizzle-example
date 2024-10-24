@@ -1,15 +1,19 @@
 'use client';
 
-import { User } from "@/app/lib/definitions"
+import { UserGet } from "@/app/lib/definitions"
 import { getUsers } from "@/app/lib/actions"
 import { useState } from "react";
+import { PencilIcon, TrashIcon } from "@heroicons/react/16/solid";
 
-
-export default function Table({ users }: { users: User[] }) {
+export default function Table({ users }: { users: UserGet[] }) {
   const [stateUsers, setStateUsers] = useState(users);
 
   const reloadUser = async () => {
     setStateUsers(await getUsers());
+  }
+
+  const editUser = (id: number) => {
+
   }
 
   return (
@@ -21,21 +25,38 @@ export default function Table({ users }: { users: User[] }) {
           Refresh
         </button>
       </div>
-      <table className="w-full">
-        <thead>
+      <table className="min-w-full mt-4 bg-slate-900 border border-slate-900 rounded-lg">
+        <thead className="bg-gray-500">
           <tr>
-            <th className="text-left">Name</th>
+            <th className="p-4 text-left">Name</th>
             <th className="text-left">Email</th>
             <th className="text-right">Age</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {
             stateUsers?.map((user) => (
-              <tr key={user.id}>
-                <td>{user.name}</td>
+              <tr key={user.id} className="odd:bg-slate-800">
+                <td className="p-2">{user.name}</td>
                 <td>{user.email}</td>
                 <td className="text-right">{user.age}</td>
+                <td>
+                  <div className="flex justify-center items-center">
+                    <a
+                      href={`/users/${user.id}/update`}
+                      className="bg-gray-500 rounded-sm p-1 ml-2 hover:bg-orange-500"
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </a>
+                    <button
+                      type="button"
+                      className="bg-red-500 rounded-sm p-1 ml-2"
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))
           }
